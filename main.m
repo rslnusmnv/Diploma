@@ -1,6 +1,6 @@
- clc; clear; close all;
+clc; clear; close all;
 %% CREATING SYSTEM OBJECTS
-videoFR = vision.VideoFileReader('Filename', 'video.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
+videoFR = vision.VideoFileReader('Filename', 'vid.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
 videoWR = vision.VideoFileWriter('Filename', 'new.avi', 'AudioInputPort', true);
 % videoPlr = vision.VideoPlayer; % создание плеера
 % videoFR.info() % Если раскомментить можно узнать инфу о видео
@@ -8,8 +8,8 @@ videoWR = vision.VideoFileWriter('Filename', 'new.avi', 'AudioInputPort', true);
 frameCounter = 1;
 while ~isDone(videoFR)
     %frame = step(videoFR); %Чтение кадра без аудиосэмпла    
-    [frame{frameCounter}, sample] = videoFR(); %Чтение кадра с аудиосэмплом  
-    lengthAudiosample = length(sample);
+    [frame{frameCounter}, sample{frameCounter}] = videoFR(); %Чтение кадра с аудиосэмплом  
+    lengthAudiosample = length(sample{frameCounter});
 %     %% EXTRACT AUDIO (HARD VERSION)Раскомментируй 32 и закомментируй 31
 %     z = 1;
 %     for j = frameCounter*length(audiosample)+1:frameCounter*length(audiosample)+length(audiosample)
@@ -21,19 +21,23 @@ while ~isDone(videoFR)
     %step(videoPlr, frame); %Воспроизведение кадров
     frameCounter = frameCounter + 1;
 end
-% figure; plot(audioHV); title('Аудио собранное по кадрам');
-% figure; plot(audioSV); title('Аудио из audioread');
+frameCounter = frameCounter - 1;
+audioHV = cell2mat(sample);
+audioHV = reshape(audioHV, [frameCounter * length(sample{frameCounter}),1]);
+
 %% READING AUDIO (SIMPLE VERSION)
-[audioSV, Fs] = audioread ( 'video.avi', 'double' );
-audioSV = audioSV(1:length(audioSV)); %Это чтобы оставить только одну дорожку аудио
-audioSV = audioSV(1:739200); %Это дополнение до целого числа кадров
+[audioSV, Fs] = audioread ( 'vid.avi', 'double' );
+figure; plot(audioHV); title('Аудио собранное по кадрам');
+figure; plot(audioSV); title('Аудио из audioread');
+% audioSV = audioSV(1:length(audioSV)); %Это чтобы оставить только одну дорожку аудио
+% audioSV = audioSV(1:739200); %Это дополнение до целого числа кадров
 %% SPEECH COMPRESSION (PREPROCESSING)
-audio = audioSV;
-% audio = audioHV;
+% audio = audioSV;
+audio = audioHV;
 n = 5;
 n1 = 3;
 L = length(audio);
-N = 6*lengthAudiosample;
+N = 8000;
 P = L / N;
 for i=1:P
     audiosample{i} = audio(1+(N*(i-1)):N*i);
@@ -42,6 +46,9 @@ for i=1:P
     MC{i} = max(abs(dct4Audiosample{i}));
     compressedSignal{i} = dct4Audiosample{i}/MC{i};
 end
+signal = cell2mat(compressedSignal);
+signal = reshape(signal, [L*0.04, 1]);
+figure; plot(signal); title('Сжатый сигнал');
 save('MC.mat','MC');
 %% GENERATE PSEUDORANDOM DISTRIBUTION 
 %Тут нужно подумать. Скорее всего нужно эту последовательность нужно брать
@@ -102,6 +109,7 @@ for i=1:P
 end
 %UNION CEIL
 newAudio = cell2mat(newAudiosample);
+newAudio = reshape(newAudio, [length(audio),1]);
 %DRAWING GRAPHICS
 figure; subplot (2,1,1); plot(audio); title('Исходное аудио');
 subplot (2,1,2); plot(newAudio); title('Аудио с встроенным ЦВЗ');
@@ -110,14 +118,11 @@ save('NewAudioMat.mat','newAudio');
 %% WRITING FRAMES AND AUDIOSAMPLES
 for m = 1:L/lengthAudiosample
     newSample{m} = newAudio(1+(lengthAudiosample*(m-1)):lengthAudiosample*m);
+    newSample{m} = reshape(newSample{m},[lengthAudiosample,1]);
 end
-frameCounter = 1;
-while frameCounter ~= L/lengthAudiosample
-    videoWR(frame{frameCounter}, newSample{frameCounter});
-    frameCounter = frameCounter + 1;
+for i = 1:frameCounter
+    videoWR(frame{i}, newSample{i});
 end
-% figure; plot(audioHV); title('Аудио собранное по кадрам');
-% figure; plot(audioSV); title('Аудио из audioread');
 release(videoWR);
 clear audioSV Fs;
 
