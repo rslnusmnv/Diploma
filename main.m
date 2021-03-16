@@ -21,20 +21,22 @@ while ~isDone(videoFR)
     %step(videoPlr, frame); %Воспроизведение кадров
     frameCounter = frameCounter + 1;
 end
+% release(videoPlr);
+release(videoFR);
 frameCounter = frameCounter - 1;
 audioHV = cell2mat(sample);
 audioHV = reshape(audioHV, [frameCounter * length(sample{frameCounter}),1]);
-
+% audioHV = audioHV(1:150000);
 %% READING AUDIO (SIMPLE VERSION)
 [audioSV, Fs] = audioread ( 'vid.avi', 'double' );
 figure; plot(audioHV); title('Аудио собранное по кадрам');
 figure; plot(audioSV); title('Аудио из audioread');
 % audioSV = audioSV(1:length(audioSV)); %Это чтобы оставить только одну дорожку аудио
-% audioSV = audioSV(1:739200); %Это дополнение до целого числа кадров
+% audioSV = audioSV(1:150000); %Это обрезка до целого числа кадров
 %% SPEECH COMPRESSION (PREPROCESSING)
 % audio = audioSV;
 audio = audioHV;
-n = 5;
+n = 6;
 n1 = 3;
 L = length(audio);
 N = 8000;
@@ -58,15 +60,6 @@ save('MC.mat','MC');
 xh = randperm(P); 
 save('scrambleVector.mat','xh');
 %% CREATING WATERMARK (Fi U Wi)
-% Тут пока так потому что в статье написано было что нужно
-% скремблировать(первый цикл после слова SCRAMBLING)
-% сигнал, но если скремблировать сжатый сигнал получается тупо(второй цикл после слова SCRAMBLING). Если все
-% таки окажется что не нужно скремблировать тогда нужно SC заменить на
-% compressedSignal
-%SCRAMBLING
-% for i = 1:P
-%     SC{i} = compressedSignal{xh(i)};
-% end
 for i = 1:P
     SC{i} = compressedSignal{i};
 end

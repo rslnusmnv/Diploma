@@ -1,6 +1,6 @@
 clc; clear; close all;
 %% CREATING SYSTEM OBJECTS
-videoFR = vision.VideoFileReader('Filename', 'new.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
+videoFR = vision.VideoFileReader('Filename', 'compressedVid2.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
 % videoPlr = vision.VideoPlayer; % создание плеера
 % videoFR.info() % Если раскомментить можно узнать инфу о видео
 %% READING FRAMES AND AUDIOSAMPLES (HARD VERSION)
@@ -25,7 +25,7 @@ release(videoFR);
 frameCounter = frameCounter - 1;
 audioHV = cell2mat(sample);
 audioHV = reshape(audioHV, [frameCounter * length(sample{frameCounter}),1]);
-% audioHV(length(audioHV)+1: length(audioHV)+134400) = 0;
+audioHV(length(audioHV)+1: length(audioHV)+1600) = 0;
 %% READING AUDIO (SIMPLE VERSION)
 [audioSV, Fs] = audioread ( 'new.avi', 'double' );
 figure; plot(audioHV); title('Аудио собранное по кадрам');
@@ -52,6 +52,36 @@ end
 for i=1:P
     dctAudiosample{i} = dct(scrambledAudiosample{i});
 end
+%EXTRACT FRAME NUMBER
+for i=1:P
+    F{i} = dctAudiosample{i}(1:n);
+end
+%COMPUTE F1 and F2
+for i = 1:P
+    F1{i} = 0;
+    for j = 1:n/2
+       F1{i} = F1{i} + floor((100*F{i}(j))+1/2)/(n/2);
+    end
+    F2{i} = 0;
+    for j = n/2+1: n
+        F2{i} = F2{i} + floor((100*F{i}(j))+1/2)/(n/2);
+    end
+end
+%ATTACK CHECK 
+count = 0;
+attackedFrames = [];
+countAttackedFrames = 0;
+for i=1:P
+    if F1{i} == F2{i}
+        fprintf('Кадр %d F1 = %f F2=%f\n',i, F1{i}, F2{i});
+        count = count + 1;
+    else
+        countAttackedFrames = countAttackedFrames + 1;
+        attackedFrames(countAttackedFrames) = i;
+    end
+end
+fprintf('Количество синхронизованных кадров %d' , count);
+
 %EXTRACT WATERMARKS
 for i=1:P
     W{i} = dctAudiosample{i}(N-N/25 +1 :N);
@@ -62,20 +92,19 @@ for i =1:P
         SC{i}(j) = nthroot(W{i}(j), n1);
     end
 end
-
 compressedAudio = cell2mat(SC);
 compressedAudio = reshape(compressedAudio, [L/25 1]);
 figure; plot(compressedAudio); title('Сжатый сигнал');
 
-%% RECONSTRUCTION
-load('MC.mat','MC');
-for i = 1:P
-    SC{i}(N/25+1:N) = 0;
-    SC{i} = SC{i} * MC{i};
-    reconstructionAudiosample{i} = idct(SC{i});
-end
-%% RECORDING RECONSTRUCTION AUDIO
-reconstructionAudio = cell2mat(reconstructionAudiosample);
-reconstructionAudio = reshape(reconstructionAudio, [length(audio),1]);
-figure; plot(reconstructionAudio); title('Восстановленное аудио');
-audiowrite('reconstructionAudio.wav',reconstructionAudio, Fs);
+% %% RECONSTRUCTION
+% load('MC.mat','MC');
+% for i = 1:P
+%     SC{i}(N/25+1:N) = 0;
+%     SC{i} = SC{i} * MC{i};
+%     reconstructionAudiosample{i} = idct(SC{i});
+% end
+% %% RECORDING RECONSTRUCTION AUDIO
+% reconstructionAudio = cell2mat(reconstructionAudiosample);
+% reconstructionAudio = reshape(reconstructionAudio, [length(audio),1]);
+% figure; plot(reconstructionAudio); title('Восстановленное аудио');
+% audiowrite('reconstructionAudio.wav',reconstructionAudio, Fs);
