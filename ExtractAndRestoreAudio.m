@@ -35,7 +35,7 @@ figure; plot(audioSV); title('Аудио из audioread');
 %% EXTRACT PROCESS
 % audio = audioSV;
 audio = audioHV;
-n = 6;
+n = 5;
 n1 = 3;
 L = length(audio);
 N = 8000;
@@ -46,7 +46,7 @@ end
 %SCRAMBLING
 load('scrambleVector.mat','xh');
 for i = 1:P
-    scrambledAudiosample{i} = audiosample{xh(i)};
+    scrambledAudiosample{xh(i)} = audiosample{i};
 end
 %COMPUTE DCT
 for i=1:P

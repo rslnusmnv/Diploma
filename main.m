@@ -10,14 +10,6 @@ while ~isDone(videoFR)
     %frame = step(videoFR); %Чтение кадра без аудиосэмпла    
     [frame{frameCounter}, sample{frameCounter}] = videoFR(); %Чтение кадра с аудиосэмплом  
     lengthAudiosample = length(sample{frameCounter});
-%     %% EXTRACT AUDIO (HARD VERSION)Раскомментируй 32 и закомментируй 31
-%     z = 1;
-%     for j = frameCounter*length(audiosample)+1:frameCounter*length(audiosample)+length(audiosample)
-%         audioHV(j, 1) = audiosample(z, 1);
-%         audioHV(j, 2) = audiosample(z, 2);
-%         z = z +1;
-%     end
-%     %%
     %step(videoPlr, frame); %Воспроизведение кадров
     frameCounter = frameCounter + 1;
 end
@@ -36,7 +28,7 @@ figure; plot(audioSV); title('Аудио из audioread');
 %% SPEECH COMPRESSION (PREPROCESSING)
 % audio = audioSV;
 audio = audioHV;
-n = 6;
+n = 5;
 n1 = 3;
 L = length(audio);
 N = 8000;
@@ -61,10 +53,10 @@ xh = randperm(P);
 save('scrambleVector.mat','xh');
 %% CREATING WATERMARK (Fi U Wi)
 for i = 1:P
-    SC{i} = compressedSignal{i};
+    SC{i} = compressedSignal{xh(i)};
 end
 for i = 1 : P
-    F(i) = (i/(10)^n1)^(abs(n));
+    F(i) = (xh(i)/(10)^n1);
 end
 for i = 1:P
     W{i} = (SC{i}).^(abs(n1));
@@ -72,7 +64,7 @@ end
 %% EMBEDDING PROCESS
 %SCRAMBLING
 for i=1:P
-    scrambleAudiosample{i} = audiosample{xh(i)};
+    scrambleAudiosample{i} = audiosample{i};
 end
 %COMPUTE DCT
 for i=1:P
@@ -98,7 +90,7 @@ for i = 1:P
 end
 %ANTISCRAMBLING
 for i=1:P
-    newAudiosample{xh(i)} = idctScrambleAudioSample{i};
+    newAudiosample{i} = idctScrambleAudioSample{i};
 end
 %UNION CEIL
 newAudio = cell2mat(newAudiosample);
