@@ -16,8 +16,8 @@ end
 % release(videoPlr);
 release(videoFR);
 frameCounter = frameCounter - 1;
-startOfRange = 304;
-endOfRange = 328;
+startOfRange = 218;
+endOfRange = 242;
 for i = 1:frameCounter
     if i < startOfRange || i > endOfRange
         videoWR(frame{i}, sample{i});
@@ -25,7 +25,4 @@ for i = 1:frameCounter
     end
 end
 release(videoWR);
-% [audioSV, Fs] = audioread ( 'new.avi', 'double' );
-% [audioHV, Fs] = audioread ( 'deleteFragmentVid.avi', 'double' );
-% figure; plot(audioSV); title('Исходное аудио');
-% figure; plot(audioHV); title('Аудио без фрагмента');
+

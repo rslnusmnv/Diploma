@@ -22,9 +22,7 @@ audioHV = reshape(audioHV, [frameCounter * length(sample{frameCounter}),1]);
 %% READING AUDIO (SIMPLE VERSION)
 [audioSV, Fs] = audioread ( 'vid.avi', 'double' );
 figure; plot(audioHV); title('Аудио собранное по кадрам');
-figure; plot(audioSV); title('Аудио из audioread');
-% audioSV = audioSV(1:length(audioSV)); %Это чтобы оставить только одну дорожку аудио
-% audioSV = audioSV(1:150000); %Это обрезка до целого числа кадров
+% figure; plot(audioSV); title('Аудио из audioread');
 %% SPEECH COMPRESSION (PREPROCESSING)
 % audio = audioSV;
 audio = audioHV;
@@ -42,7 +40,7 @@ for i=1:P
 end
 signal = cell2mat(compressedSignal);
 signal = reshape(signal, [L*0.04, 1]);
-figure; plot(signal); title('Сжатый сигнал');
+% figure; plot(signal); title('Сжатый сигнал');
 save('MC.mat','MC');
 %% GENERATE PSEUDORANDOM DISTRIBUTION 
 %Тут нужно подумать. Скорее всего нужно эту последовательность нужно брать
@@ -59,8 +57,9 @@ for i = 1 : P
     F(i) = (xh(i)/(10)^n1);
 end
 for i = 1:P
-    W{i} = (SC{i}).^(abs(n1));
+    W{i} = (SC{i}).^abs(n1);
 end
+save('watermarks.mat','W');
 %% EMBEDDING PROCESS
 %SCRAMBLING
 for i=1:P

@@ -9,14 +9,6 @@ while ~isDone(videoFR)
     %frame = step(videoFR); %Чтение кадра без аудиосэмпла    
     [frame{frameCounter}, sample{frameCounter}] = videoFR(); %Чтение кадра с аудиосэмплом  
     lengthAudiosample = length(sample{frameCounter});
-%     %% EXTRACT AUDIO (HARD VERSION)Раскомментируй 32 и закомментируй 31
-%     z = 1;
-%     for j = frameCounter*length(audiosample)+1:frameCounter*length(audiosample)+length(audiosample)
-%         audioHV(j, 1) = audiosample(z, 1);
-%         audioHV(j, 2) = audiosample(z, 2);
-%         z = z +1;
-%     end
-%     %%
     %step(videoPlr, frame); %Воспроизведение кадров
     frameCounter = frameCounter + 1;
 end
@@ -29,7 +21,7 @@ audioHV = reshape(audioHV, [frameCounter * length(sample{frameCounter}),1]);
 %% READING AUDIO (SIMPLE VERSION)
 [audioSV, Fs] = audioread ( 'new.avi', 'double' );
 figure; plot(audioHV); title('Аудио собранное по кадрам');
-figure; plot(audioSV); title('Аудио из audioread');
+% figure; plot(audioSV); title('Аудио из audioread');
 % audioSV = audioSV(1:length(audioSV)); %Это чтобы оставить только одну дорожку аудио
 % audioSV(length(audioSV)+1: length(audioSV)+1696) = 0;
 %% EXTRACT PROCESS
@@ -55,6 +47,7 @@ end
 %EXTRACT WATERMARKS
 for i=1:P
     W{i} = dctAudiosample{i}(N-N/25 +1 :N);
+%     SC{i} = W{i};
 end
 
 for i =1:P
@@ -62,6 +55,7 @@ for i =1:P
         SC{i}(j) = nthroot(W{i}(j), n1);
     end
 end
+
 
 compressedAudio = cell2mat(SC);
 compressedAudio = reshape(compressedAudio, [L/25 1]);

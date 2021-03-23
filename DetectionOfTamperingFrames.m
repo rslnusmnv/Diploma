@@ -1,6 +1,7 @@
-clc; clear; close all;
+clc; clear; %close all;
 %% CREATING SYSTEM OBJECTS
 videoFR = vision.VideoFileReader('Filename', 'deleteFragmentVid.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
+videoFR2 = vision.VideoFileReader('Filename', 'new.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
 % videoPlr = vision.VideoPlayer; % создание плеера
 % videoFR.info() % Если раскомментить можно узнать инфу о видео
 %% READING FRAMES AND AUDIOSAMPLES (HARD VERSION)
@@ -9,14 +10,6 @@ while ~isDone(videoFR)
     %frame = step(videoFR); %Чтение кадра без аудиосэмпла    
     [frame{frameCounter}, sample{frameCounter}] = videoFR(); %Чтение кадра с аудиосэмплом  
     lengthAudiosample = length(sample{frameCounter});
-%     %% EXTRACT AUDIO (HARD VERSION)Раскомментируй 32 и закомментируй 31
-%     z = 1;
-%     for j = frameCounter*length(audiosample)+1:frameCounter*length(audiosample)+length(audiosample)
-%         audioHV(j, 1) = audiosample(z, 1);
-%         audioHV(j, 2) = audiosample(z, 2);
-%         z = z +1;
-%     end
-%     %%
     %step(videoPlr, frame); %Воспроизведение кадров
     frameCounter = frameCounter + 1;
 end
@@ -26,10 +19,23 @@ frameCounter = frameCounter - 1;
 audioHV = cell2mat(sample);
 audioHV = reshape(audioHV, [frameCounter * length(sample{frameCounter}),1]);
 % audioHV(length(audioHV)+1: length(audioHV)+40000) = 0;
+
+frameCounter2 = 1;
+while ~isDone(videoFR2) 
+    [frame2{frameCounter2}, sample2{frameCounter2}] = videoFR2(); %Чтение кадра с аудиосэмплом  
+    lengthAudiosample2 = length(sample2{frameCounter2});
+    frameCounter2 = frameCounter2 + 1;
+end
+release(videoFR2);
+frameCounter2 = frameCounter2 - 1;
+audioHV2 = cell2mat(sample2);
+audioHV2 = reshape(audioHV2, [frameCounter2 * length(sample2{frameCounter2}),1]);
+figure; plot(audioHV2); title('Видео без удаления');
+% audioHV(length(audioHV)+1: length(audioHV)+40000) = 0;
 %% READING AUDIO (SIMPLE VERSION)
-[audioSV, Fs] = audioread ( 'vid.avi', 'double' );
+[audioSV, Fs] = audioread ( 'deleteFragmentVid.avi', 'double' );
 figure; plot(audioHV); title('Аудио собранное по кадрам');
-figure; plot(audioSV); title('Аудио из audioread');
+% figure; plot(audioSV); title('Аудио из audioread');
 % audioSV = audioSV(1:length(audioSV)); %Это чтобы оставить только одну дорожку аудио
 % audioSV(length(audioSV)+1: length(audioSV)+1696) = 0;
 %% EXTRACT PROCESS
@@ -97,6 +103,7 @@ figure; plot(augmentedAudio); title('Аудио с нулями');
 %EXTRACT WATERMARKS
 load('scrambleVector.mat','xh');
 load('MC.mat','MC');
+load('watermarks.mat','W');
 for i=countLeft : countLeft+difference/N
     k = xh(i);
     audioframe = augmentedAudio(1+(N*(k-1)):N*k);
@@ -106,7 +113,7 @@ for i=countLeft : countLeft+difference/N
         SC(j) = nthroot(W(j), n1);
     end
     SC(N/25+1:N) = 0;
-    SC = SC * MC{k};
+    SC = SC * MC{i};
     reconstructionAudiosample = idct(SC);
     augmentedAudio(1+(N*(i-1)):N*i) = reconstructionAudiosample;
 end
