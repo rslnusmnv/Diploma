@@ -40,7 +40,7 @@ for i=1:P
 end
 signal = cell2mat(compressedSignal);
 signal = reshape(signal, [L*0.04, 1]);
-% figure; plot(signal); title('Сжатый сигнал');
+figure; plot(signal); title('Сжатый сигнал');
 save('MC.mat','MC');
 %% GENERATE PSEUDORANDOM DISTRIBUTION 
 %Тут нужно подумать. Скорее всего нужно эту последовательность нужно брать
