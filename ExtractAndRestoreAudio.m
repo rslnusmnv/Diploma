@@ -22,8 +22,6 @@ audioHV = reshape(audioHV, [frameCounter * length(sample{frameCounter}),1]);
 [audioSV, Fs] = audioread ( 'new.avi', 'double' );
 figure; plot(audioHV); title('Аудио собранное по кадрам');
 % figure; plot(audioSV); title('Аудио из audioread');
-% audioSV = audioSV(1:length(audioSV)); %Это чтобы оставить только одну дорожку аудио
-% audioSV(length(audioSV)+1: length(audioSV)+1696) = 0;
 %% EXTRACT PROCESS
 % audio = audioSV;
 audio = audioHV;
@@ -55,8 +53,6 @@ for i =1:P
         SC{i}(j) = nthroot(W{i}(j), n1);
     end
 end
-
-
 compressedAudio = cell2mat(SC);
 compressedAudio = reshape(compressedAudio, [L/25 1]);
 figure; plot(compressedAudio); title('Сжатый сигнал');

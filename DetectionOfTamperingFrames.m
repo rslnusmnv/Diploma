@@ -93,7 +93,7 @@ for i = L:-N:1
         break;
     end    
 end
-
+%adding zeros 
 difference = originalLength - N*(countLeft+countRight);
 augmentedAudio = audio(1:N*countLeft);
 augmentedAudio(N*countLeft+1:N*countLeft+difference) = 0;

@@ -14,6 +14,7 @@ frameCounter = frameCounter - 1;
 audioHV = cell2mat(sample);
 audioHV = reshape(audioHV, [frameCounter * length(sample{frameCounter}),1]);
 figure; plot(audioHV); title('Видео без замены');
+%% REPLACEMENT AND WRITING
 startOfRange = 218;
 endOfRange = 242;
 for i = 1:frameCounter    
@@ -24,8 +25,8 @@ for i = 1:frameCounter
     end
 end
 release(videoWR);
-
-videoFR2 = vision.VideoFileReader('Filename', 'deleteFragmentVid.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
+%% PLOT REPLACEMENT ATTACK
+videoFR2 = vision.VideoFileReader('Filename', 'replaceFragmentVid.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
 frameCounter2 = 1;
 while ~isDone(videoFR2) 
     [frame2{frameCounter2}, sample2{frameCounter2}] = videoFR2(); %Чтение кадра с аудиосэмплом  

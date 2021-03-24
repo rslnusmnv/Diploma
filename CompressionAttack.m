@@ -3,9 +3,9 @@ clc; clear; close all;
 videoFR = vision.VideoFileReader('Filename', 'new.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
 % Два сжатия DV и MJPEG, нужное расскомментируй
 % videoWR = vision.VideoFileWriter('Filename', 'compressedVidDV.avi', 'AudioInputPort', true, 'VideoCompressor', 'DV Video Encoder');
-% videoWR = vision.VideoFileWriter('Filename', 'compressedVidMJPEG.avi', 'AudioInputPort', true, 'VideoCompressor', 'MJPEG Compressor');
-% videoWR = vision.VideoFileWriter('Filename', 'kek.avi', 'AudioInputPort', true);
-videoWR = vision.VideoFileWriter('Filename', 'kek.mp4', 'FileFormat', 'MPEG4', 'AudioInputPort', true);
+videoWR = vision.VideoFileWriter('Filename', 'compressedVidMJPEG.avi', 'AudioInputPort', true, 'VideoCompressor', 'MJPEG Compressor');
+% в этом случае аудио не пишется
+% videoWR = vision.VideoFileWriter('Filename', 'kek.mp4', 'FileFormat', 'MPEG4', 'AudioInputPort', true);
 videoWR.VideoCompressor
 % videoPlr = vision.VideoPlayer; % создание плеера
 % videoFR.info() % Если раскомментить можно узнать инфу о видео
@@ -20,6 +20,7 @@ while ~isDone(videoFR)
 end
 % release(videoPlr);
 release(videoFR);
+%% WRITING
 frameCounter = frameCounter - 1;
 for i = 1:frameCounter
     videoWR(frame{i});

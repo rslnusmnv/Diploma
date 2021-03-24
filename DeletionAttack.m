@@ -16,6 +16,7 @@ end
 % release(videoPlr);
 release(videoFR);
 frameCounter = frameCounter - 1;
+%% DELETING AND WRITING 
 startOfRange = 218;
 endOfRange = 242;
 for i = 1:frameCounter
