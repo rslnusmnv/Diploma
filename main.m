@@ -48,6 +48,9 @@ save('MC.mat','MC');
 %последовательность на какую-то определенную цифру. А ключ уже можно
 %рандомить
 xh = randperm(P); 
+%Следующие две строчки реализуют идею про циклический сдвиг
+% xh = (1:1:P); %
+% xh = circshift(xh,20);
 save('scrambleVector.mat','xh');
 %% CREATING WATERMARK (Fi U Wi)
 for i = 1:P

@@ -18,11 +18,10 @@ release(videoFR);
 frameCounter = frameCounter - 1;
 %% DELETING AND WRITING 
 startOfRange = 218;
-endOfRange = 242;
+endOfRange = 219;
 for i = 1:frameCounter
     if i < startOfRange || i > endOfRange
         videoWR(frame{i}, sample{i});
-        i
     end
 end
 release(videoWR);

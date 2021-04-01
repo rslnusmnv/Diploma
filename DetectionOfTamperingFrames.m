@@ -1,4 +1,4 @@
-clc; clear; %close all;
+clc; clear; close all;
 %% CREATING SYSTEM OBJECTS
 videoFR = vision.VideoFileReader('Filename', 'deleteFragmentVid.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
 videoFR2 = vision.VideoFileReader('Filename', 'new.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
@@ -30,11 +30,11 @@ release(videoFR2);
 frameCounter2 = frameCounter2 - 1;
 audioHV2 = cell2mat(sample2);
 audioHV2 = reshape(audioHV2, [frameCounter2 * length(sample2{frameCounter2}),1]);
-figure; plot(audioHV2); title('Видео без удаления');
+% figure; plot(audioHV2); title('Видео без удаления');
 % audioHV(length(audioHV)+1: length(audioHV)+40000) = 0;
 %% READING AUDIO (SIMPLE VERSION)
 [audioSV, Fs] = audioread ( 'deleteFragmentVid.avi', 'double' );
-figure; plot(audioHV); title('Аудио собранное по кадрам');
+% figure; plot(audioHV); title('Аудио собранное по кадрам');
 % figure; plot(audioSV); title('Аудио из audioread');
 % audioSV = audioSV(1:length(audioSV)); %Это чтобы оставить только одну дорожку аудио
 % audioSV(length(audioSV)+1: length(audioSV)+1696) = 0;
@@ -98,8 +98,8 @@ difference = originalLength - N*(countLeft+countRight);
 augmentedAudio = audio(1:N*countLeft);
 augmentedAudio(N*countLeft+1:N*countLeft+difference) = 0;
 augmentedAudio(N*countLeft+difference+1:originalLength) = audio(L-N*countRight+1:L);
-figure; plot(audio); title('Аудио с удаленным фрагментом');
-figure; plot(augmentedAudio); title('Аудио с нулями');
+% figure; plot(audio); title('Аудио с удаленным фрагментом');
+% figure; plot(augmentedAudio); title('Аудио с нулями');
 %EXTRACT WATERMARKS
 load('scrambleVector.mat','xh');
 load('MC.mat','MC');
@@ -117,7 +117,9 @@ for i=countLeft : countLeft+difference/N
     reconstructionAudiosample = idct(SC);
     augmentedAudio(1+(N*(i-1)):N*i) = reconstructionAudiosample;
 end
-figure; plot(augmentedAudio); title('Восстановленное аудио');
+% figure; plot(augmentedAudio); title('Восстановленное аудио');
 %% RECORDING RECONSTRUCTION AUDIO
 reconstructionAudio = augmentedAudio;
 audiowrite('reconstructionAudio2.wav',reconstructionAudio, Fs);
+%% QUALITY CONTROL
+evaluate_denoising_metrics(audioHV2, reconstructionAudio);
