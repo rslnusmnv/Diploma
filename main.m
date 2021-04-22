@@ -98,6 +98,9 @@ end
 newAudio = cell2mat(newAudiosample);
 newAudio = reshape(newAudio, [length(audio),1]);
 %DRAWING GRAPHICS
+figure; subplot (2,1,2); plot(signal); title('Сжатое аудио');
+subplot (2,1,1); plot(audio); title('Исходное аудио');
+
 figure; subplot (2,1,1); plot(audio); title('Исходное аудио');
 subplot (2,1,2); plot(newAudio); title('Аудио с встроенным ЦВЗ');
 audiowrite('newAudio.wav',newAudio, Fs);

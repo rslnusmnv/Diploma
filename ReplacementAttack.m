@@ -13,10 +13,10 @@ release(videoFR);
 frameCounter = frameCounter - 1;
 audioHV = cell2mat(sample);
 audioHV = reshape(audioHV, [frameCounter * length(sample{frameCounter}),1]);
-figure; plot(audioHV); title('Видео без замены');
+% figure; plot(audioHV); title('Видео без замены');
 %% REPLACEMENT AND WRITING
-startOfRange = 218;
-endOfRange = 242;
+startOfRange = 318;
+endOfRange = 343;
 for i = 1:frameCounter    
     if i < startOfRange || i > endOfRange
         videoWR(frame{i}, sample{i});        
@@ -36,4 +36,4 @@ release(videoFR2);
 frameCounter2 = frameCounter2 - 1;
 audioHV2 = cell2mat(sample2);
 audioHV2 = reshape(audioHV2, [frameCounter2 * length(sample2{frameCounter2}),1]);
-figure; plot(audioHV2); title('Видео с заменой');
+% figure; plot(audioHV2); title('Видео с заменой');

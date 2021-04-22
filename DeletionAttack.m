@@ -1,6 +1,6 @@
 clc; clear; close all;
 %% CREATING SYSTEM OBJECTS
-videoFR = vision.VideoFileReader('Filename', 'new.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
+videoFR = vision.VideoFileReader('Filename', 'new2.avi', 'AudioOutputPort', true, 'AudioOutputDataType', 'double');
 videoWR = vision.VideoFileWriter('Filename', 'deleteFragmentVid.avi', 'AudioInputPort', true);
 % videoPlr = vision.VideoPlayer; % создание плеера
 % videoFR.info() % Если раскомментить можно узнать инфу о видео
@@ -18,9 +18,10 @@ release(videoFR);
 frameCounter = frameCounter - 1;
 %% DELETING AND WRITING 
 startOfRange = 218;
-endOfRange = 219;
+endOfRange = 242;
 for i = 1:frameCounter
     if i < startOfRange || i > endOfRange
+        i
         videoWR(frame{i}, sample{i});
     end
 end

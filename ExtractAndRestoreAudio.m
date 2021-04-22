@@ -67,5 +67,7 @@ end
 %% RECORDING RECONSTRUCTION AUDIO
 reconstructionAudio = cell2mat(reconstructionAudiosample);
 reconstructionAudio = reshape(reconstructionAudio, [length(audio),1]);
-figure; plot(reconstructionAudio); title('Восстановленное аудио');
+figure; subplot (3,1,1); plot(audio); title('Аудио с ЦВЗ');
+subplot (3,1,2); plot(compressedAudio); title('Сжатый сигнал');
+subplot (3,1,3); plot(reconstructionAudio); title('Восстановленое аудио');
 audiowrite('reconstructionAudio.wav',reconstructionAudio, Fs);

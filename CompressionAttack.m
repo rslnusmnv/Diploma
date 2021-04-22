@@ -23,7 +23,7 @@ release(videoFR);
 %% WRITING
 frameCounter = frameCounter - 1;
 for i = 1:frameCounter
-    videoWR(frame{i});
+    videoWR(frame{i},sample{i});
 end
 release(videoWR);
 
